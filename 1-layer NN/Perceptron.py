@@ -1,0 +1,78 @@
+import os
+from random import random
+from math import e, sqrt
+
+
+class Perceptron:
+
+    def __init__(self, name, learning_parameter):
+        self.name = name
+        self.learning_parameter = learning_parameter
+        self.letters = dict.fromkeys(
+            ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
+             'v', 'w', 'x', 'y', 'z'], 0)
+        self.weigths = [random() for _ in range(26)]
+        self.max_error = 0.05
+        self.theta = random()
+        self.error = 0
+        self.current_output = 0
+
+    def file_freq(self, file):
+        self.letters = dict.fromkeys(
+            ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
+             'v', 'w', 'x', 'y', 'z'], 0)
+        size = 0
+        # print(self.letters)
+        file = file
+        with open(file, 'r') as f:
+            for line in f:
+                line = list(line)
+                for char in line:
+                    char = char.lower()
+                    if char in self.letters:
+                        self.letters[char] += 1
+                        size += 1
+        for k in self.letters:
+            self.letters[k] /= size
+        # return self.letters, size
+
+    def update_weights(self, lang):
+        d = 1 if lang == self.name else 0
+        x = list(self.letters.values())
+        y = self.calc_activation_function()
+        normalization = 0
+        for weight in self.weigths:
+            normalization += weight ** 2
+        normalization = sqrt(normalization)
+        for i in range(len(self.weigths)):
+            self.weigths[i] += self.learning_parameter * (d - y) * y * (1 - y) * x[i]
+            self.weigths[i] /= normalization
+        self.theta -= self.learning_parameter * (d - y) * y * (1 - y)
+        self.calc_error(d, y)
+
+    def calc_error(self, d, y):
+        self.error += 0.5 * (d - y) ** 2
+
+    def calc_activation_function(self):
+        self.current_output = 0
+        dot_product = 0
+        for k, w_i in zip(self.letters, self.weigths):
+            dot_product += self.letters[k] * w_i
+        net_value = dot_product - self.theta
+        y = 1 / (1 + e ** (-net_value))
+        self.current_output = y
+        return y
+
+    def process(self, file):
+        self.file_freq(file)
+        self.calc_activation_function()
+        cur_dir = os.path.split(os.path.split(os.path.abspath(file))[0])[1]
+        self.update_weights(cur_dir)
+
+    def test(self, file):
+        self.file_freq(file)
+        self.calc_activation_function()
+
+
+if __name__ == '__main__':
+    pass
