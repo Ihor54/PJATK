@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/1-layer NN.iml" filepath="$PROJECT_DIR$/.idea/1-layer NN.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../.idea/NAI.iml" filepath="$PROJECT_DIR$/../.idea/NAI.iml" />
       <module fileurl="file://$PROJECT_DIR$/../../PSM/.idea/PSM.iml" filepath="$PROJECT_DIR$/../../PSM/.idea/PSM.iml" />
+      <module fileurl="file://G:/Courses/Python course/Django/myinternetshop/.idea/myinternetshop.iml" filepath="G:/Courses/Python course/Django/myinternetshop/.idea/myinternetshop.iml" />
     </modules>
   </component>
 </project>

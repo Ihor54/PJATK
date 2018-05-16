@@ -1,6 +1,7 @@
 import os
-from random import random
-from math import e, sqrt
+import numpy as np
+from random import random, uniform
+from math import exp, sqrt
 
 
 class Perceptron:
@@ -11,11 +12,16 @@ class Perceptron:
         self.letters = dict.fromkeys(
             ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
              'v', 'w', 'x', 'y', 'z'], 0)
-        self.weigths = [random() for _ in range(26)]
-        self.max_error = 0.05
-        self.theta = random()
+        self.weigths = np.array([uniform(0, 1) for _ in range(26)])
+        # self.theta = random()
         self.error = 0
         self.current_output = 0
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name
 
     def file_freq(self, file):
         self.letters = dict.fromkeys(
@@ -23,7 +29,6 @@ class Perceptron:
              'v', 'w', 'x', 'y', 'z'], 0)
         size = 0
         # print(self.letters)
-        file = file
         with open(file, 'r') as f:
             for line in f:
                 line = list(line)
@@ -36,32 +41,42 @@ class Perceptron:
             self.letters[k] /= size
         # return self.letters, size
 
-    def update_weights(self, lang):
-        d = 1 if lang == self.name else 0
-        x = list(self.letters.values())
-        y = self.calc_activation_function()
-        normalization = 0
-        for weight in self.weigths:
-            normalization += weight ** 2
+    def update_weights(self, dir_name):
+        # x = self.letters.values()
+        # normalization = 0
+        # for weight in self.weigths:
+        #     normalization += weight ** 2
+        # for i in range(len(self.weigths)):
+        #     self.weigths[i] += self.learning_parameter * (d - y) * y * (1 - y) * x[i]
+        #     self.weigths[i] /= normalization
+
+        d = 1 if dir_name == self.name else 0
+        x = np.array(list(self.letters.values()))
+        # y = self.calc_activation_function()
+        y = self.current_output
+        normalization = np.sum(self.weigths ** 2)
         normalization = sqrt(normalization)
-        for i in range(len(self.weigths)):
-            self.weigths[i] += self.learning_parameter * (d - y) * y * (1 - y) * x[i]
-            self.weigths[i] /= normalization
-        self.theta -= self.learning_parameter * (d - y) * y * (1 - y)
+        self.weigths += self.learning_parameter * (d - y) * y * (1 - y) * x
+        # self.weigths /= normalization
+        # self.theta -= self.learning_parameter * (d - y) * y * (1 - y)
         self.calc_error(d, y)
 
     def calc_error(self, d, y):
-        self.error += 0.5 * (d - y) ** 2
+        self.error = 0.5 * (d - y) ** 2
 
     def calc_activation_function(self):
+        # dot_product = 0
+        # for k, w_i in zip(self.letters, self.weigths):
+        #     dot_product += self.letters[k] * w_i
+
         self.current_output = 0
-        dot_product = 0
-        for k, w_i in zip(self.letters, self.weigths):
-            dot_product += self.letters[k] * w_i
-        net_value = dot_product - self.theta
-        y = 1 / (1 + e ** (-net_value))
+        x = np.array(list(self.letters.values()))
+        dot_product = np.sum(x * self.weigths)
+        # net_value = dot_product - self.theta
+        net_value = dot_product
+        y = 1 / (1 + exp(-net_value))
         self.current_output = y
-        return y
+        # return y
 
     def process(self, file):
         self.file_freq(file)

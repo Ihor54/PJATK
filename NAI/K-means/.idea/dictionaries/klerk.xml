@@ -2,9 +2,8 @@
   <dictionary name="klerk">
     <words>
       <w>clstrs</w>
-      <w>setosa</w>
-      <w>versicolor</w>
-      <w>virginica</w>
+      <w>perceptron</w>
+      <w>perceptrons</w>
       <w>weigths</w>
     </words>
   </dictionary>
