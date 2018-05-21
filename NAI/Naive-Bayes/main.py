@@ -1,5 +1,6 @@
 from Car_class import Car
 import os
+from functools import reduce
 
 
 def create_list_of_class_instances(file):
@@ -13,28 +14,25 @@ def create_list_of_class_instances(file):
     return instances_list
 
 
-def calculate_probability(x, y, training):
+def calculate_probability(x, y, training_set, p_y):
     x_len = len(x)
-    data = [i for i in training if i.car_class == y]
-    lists = []
+    data = [i for i in training_set if i.car_class == y]
+    lists = [[j for j in data if j.attributes[i] == x[i]] for i in range(x_len)]
+    p = [p_y]
     for i in range(x_len):
-        lists.append([j for j in data if j.attributes[i] == x[i]])
-    lists_1 = [[j for j in data if j.attributes[i] == x[i]] for i in range(x_len)]
-    print(lists == lists_1)
-    # # p1 = (lists[0] + 1) / (len(data) + len(set(lists[0])))
-    # price = [i for i in data if i.attributes[0] == x[0]]
-    # maintenance = [i for i in data if i.attributes[1] == x[1]]
-    # doors = [i for i in data if i.attributes[2] == x[2]]
-    # capacity = [i for i in data if i.attributes[3] == x[3]]
-    # luggage = [i for i in data if i.attributes[4] == x[4]]
-    # safety = [i for i in data if i.attributes[5] == x[5]]
-    # lists = [price, maintenance, doors, capacity, luggage, safety]
-    # p = []
-    # for i in range(len(x)):
-    #     p1 = (len(lists[i]) + 1) / (len(data) + len({j.attributes[i] for j in data}))
-    #     p.append(p1)
+        unique_attributes = {j.attributes[i] for j in data}
+        p1 = (len(lists[i]) + 1) / (len(data) + len(unique_attributes))
+        p.append(p1)
+    likelihood = reduce(lambda i, j: i * j, p)
+    return likelihood
 
-    return lists
+
+def calculate_accuracy(known_values, predicted_values):
+    i = 0
+    for j in known_values:
+        if j.car_class != predicted_values[1]:
+            i += 1
+    return i / len(known_values)
 
 
 if __name__ == '__main__':
@@ -51,18 +49,19 @@ if __name__ == '__main__':
         for c in training_list:
             if car_class == c.car_class:
                 counter += 1
-        # unique_values = {car.car_class for car in training_list}
         probability = (counter + 1) / (len(training_list) + len(classes_of_cars))
-        print('{}, counter = {}, probability = {} '.format(car_class, counter, probability))
+        # print('{}, counter = {}, probability = {} '.format(car_class, counter, probability))
         car_class_probabilities[car_class] = probability
-    print(car_class_probabilities)
-    print(calculate_probability(test_list[0].attributes, 'acc', training_list))
-    # for el in test_list:
-    #     x_values = el.attributes
-
-
-# print(training_path)
-# print(test_path)
-# print(training_list)
-# print(test_list)
-# print(classes_of_cars)
+    # print(car_class_probabilities)
+    test_results = []
+    for el in test_list:
+        x_values = el.attributes
+        likelihoods = []
+        for k, v in car_class_probabilities.items():
+            result = (calculate_probability(x=x_values, y=k, training_set=training_list, p_y=v), k)
+            likelihoods.append(result)
+        likelihoods = sorted(likelihoods, key=lambda x: x[0], reverse=True)
+        print('{} --------------- {}'.format(el.car_class, likelihoods[0][1]))
+        test_results.append(likelihoods[0])
+    accuracy = calculate_accuracy(test_list, test_results)
+    print('Accuracy = {}%'.format(accuracy * 100))
