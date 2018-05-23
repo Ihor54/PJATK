@@ -2,6 +2,10 @@ from Car_class import Car
 import os
 from functools import reduce
 
+path = os.path.join(os.getcwd(), 'car_bayes')
+training_path = os.path.join(path, 'training')
+test_path = os.path.join(path, 'test')
+
 
 def create_list_of_class_instances(file):
     instances_list = []
@@ -27,6 +31,17 @@ def calculate_probability(x, y, training_set, p_y):
     return likelihood
 
 
+def predict_value_for_test_example(class_probabilities, test_example):
+    x_values = test_example.attributes
+    likelihoods = []
+    for k, v in class_probabilities.items():
+        probability_of_item = (calculate_probability(x=x_values, y=k, training_set=training_list, p_y=v), k)
+        likelihoods.append(probability_of_item)
+    likelihoods = sorted(likelihoods, key=lambda x: x[0], reverse=True)
+    best_likelihood = likelihoods[0]
+    return best_likelihood
+
+
 def calculate_accuracy(known_values, predicted_values):
     i = 0
     for j in known_values:
@@ -36,32 +51,53 @@ def calculate_accuracy(known_values, predicted_values):
 
 
 if __name__ == '__main__':
-    path = os.path.join(os.getcwd(), 'car_bayes')
-    training_path = os.path.join(path, 'training')
-    test_path = os.path.join(path, 'test')
+    flag = 0
+    user_example = ''
+    try:
+        flag = int(input('Do you want to test examples from a test file or provide your own example? \n'
+                         '0 - test examples from a test file \n'
+                         '1 - provide your own example\n'
+                         'Your answer: '))
+        if flag == 1:
+            user_example = input('Provide your example: ')
+    except ValueError:
+        print('Invalid input')
+
+    # create list of instances of class Car from test and training files
     training_list = create_list_of_class_instances(training_path)
     test_list = create_list_of_class_instances(test_path)
-    classes_of_cars = {car.car_class for car in training_list}
-    classes_of_cars = tuple(classes_of_cars)
+
+    # create a set of all unique classes of cars
+    classes_of_cars = tuple({car.car_class for car in training_list})
+    # classes_of_cars = tuple(classes_of_cars)
+
+    # for each class calculate its probability
     car_class_probabilities = {}
     for car_class in classes_of_cars:
         counter = 0
+        # for each class count number of elements in the training list with the same class_name
         for c in training_list:
             if car_class == c.car_class:
                 counter += 1
+        # compute the probability with smoothing
         probability = (counter + 1) / (len(training_list) + len(classes_of_cars))
-        # print('{}, counter = {}, probability = {} '.format(car_class, counter, probability))
+        # add current class and its probability to the dictionary
         car_class_probabilities[car_class] = probability
-    # print(car_class_probabilities)
-    test_results = []
-    for el in test_list:
-        x_values = el.attributes
-        likelihoods = []
-        for k, v in car_class_probabilities.items():
-            result = (calculate_probability(x=x_values, y=k, training_set=training_list, p_y=v), k)
-            likelihoods.append(result)
-        likelihoods = sorted(likelihoods, key=lambda x: x[0], reverse=True)
-        print('{} --------------- {}'.format(el.car_class, likelihoods[0][1]))
-        test_results.append(likelihoods[0])
-    accuracy = calculate_accuracy(test_list, test_results)
-    print('Accuracy = {}%'.format(accuracy * 100))
+
+    if flag == 0:
+        # predict the value for each test example
+        test_results = []
+        for el in test_list:
+            result = predict_value_for_test_example(car_class_probabilities, el)
+            print('Labelled: {} --------------- predicted: {}'.format(el.car_class, result[1]))
+            test_results.append(result)
+        accuracy = calculate_accuracy(test_list, test_results)
+        print('Accuracy = {}%'.format(accuracy * 100))
+
+    elif flag == 1:
+        # predict the value for user_example
+        user_example = user_example.split(',')
+        user_example[-1] = user_example[-1].replace('\n', '')
+        user_example = Car([i for i in user_example])
+        result = predict_value_for_test_example(car_class_probabilities, user_example)
+        print('Labelled: {} --------------- predicted: {}'.format(user_example.car_class, result[1]))
