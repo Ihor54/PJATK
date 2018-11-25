@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto explicabo corrupti quo pariatur nam perferendis
+        magnam rerum tempore et! Vero ab praesentium, laborum aliquam velit ad dignissimos id molestiae facilis.</p>
+    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Inventore qui, deserunt eum expedita maxime assumenda
+        praesentium, dolores facere incidunt, esse ad natus quo velit repellat. Laboriosam rerum et totam aliquam.</p>
+</body>
+
+<script>
+    function addParagraph() {
+        let el = document.createElement('p');
+        let text = document.createTextNode("It's a new added paragraph. LoL");
+        el.appendChild(text);
+        document.body.appendChild(el);
+    }
+
+    setTimeout('addParagraph()', 2000);
+
+</script>
+
+</html>

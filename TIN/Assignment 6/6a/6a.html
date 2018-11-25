@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="ISO-8859-1">
+  <title>TPO Web-applications 2</title>
+  <link rel="stylesheet" href="6a.css">
+  <script src="6a.js"></script>
+<body>
+
+  <h2>Convert temperature</h2>
+  <div>
+    <form name="degreesConversion">
+      <input type="number" id="temp" name="temp" placeholder="Enter temperature">
+      <select id="units">
+        <option value="celsius">From celsius fahrenheit</option>
+        <option value="fahrenheit">From fahrenheit to celsius </option>
+      </select>
+      <input type="button" value="Calculate" onclick="handle()"> 
+    </form>
+  </div>
+  <h2 id="result"> </h2>
+
+</body>
+
+</html>

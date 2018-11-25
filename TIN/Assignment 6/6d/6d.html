@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Assignment 6</title>
+    <link rel="stylesheet" href="6d.css">
+    <link rel="stylesheet" href="tableStyle.css">
+    <script src="6d.js"></script>
+
+<body>
+
+    <h2>User administration</h2>
+    <div>
+        <form name="hourLog">
+            <input type="text" id="field0" placeholder="Enter your login">
+            <input type="text" id="field1" placeholder="Enter your password">
+            <input type="button" value="Save" onclick="handle()">
+            <p id="error"></p>
+        </form>
+    </div>
+    <h2 id="result"> </h2>
+    <table class="container">
+        <thead>
+            <tr>
+                <th>Login</th>
+                <th>Password</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody id='tb'>
+
+        </tbody>
+    </table>
+</body>
+
+</html>
